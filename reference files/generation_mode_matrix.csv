@@ -1,0 +1,7 @@
+mode_id,Report Outline,Report Anchor,Report,Script Anchor,Script Outline,Script,Report Base WC,Script Base WC
+historical podcast,y,y,y,n,y,y,3000,3000
+general podcast,y,y,y,n,y,y,2500,2500
+technical podcast,n,n,n,y,y,y,,2500
+technical book learning,n,n,n,y,y,y,,2500
+technical book summary,y,y,y,y,y,y,,2500
+general book summary,n,n,n,y,y,y,,2500

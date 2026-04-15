@@ -1,0 +1,13 @@
+Below is the outline for a podcast on the topic of "{{topic}}". 
+Your task is to generate a single-sentence podcast description for the podcast based on the topic and outline.
+=== OUTLINE START ===
+{{outline}}
+=== OUTLINE END ===
+
+Task Description:
+- Generate a short, single-sentence podcast description.
+- Must be a single, standalone sentence.
+- Include the topic. 
+- Between **twelve (12)** and **twenty-five (25)** words in length.
+- The description should be engaging and intelligently infer the main subject of the podcast from the topic name and outline.
+- Return ONLY the single sentence. Do not include any commentary, pre-amble, labels, or extra text.

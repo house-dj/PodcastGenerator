@@ -1,0 +1,126 @@
+{
+  "topic": "Introduction to Modern Data Quality Management by John Smith",
+  "target_word_count": 3300,
+  "outline_sections": [
+    {
+      "section_number": 1,
+      "section_title": "Introduction: The Paradigm Shift in Information Asset Management",
+      "allocated_word_count": 200,
+      "chapter_mapping": ["Chapter 1"],
+      "sub_sections": [
+        "Defining DQ as a function of business objectives vs. perfection",
+        "The impact of systemic neglect on AI/ML and data monetization"
+      ],
+      "key_technical_requirements": [
+        "Analyze the 'invisible productivity drain' concept",
+        "Contrast physical supply chain management with information asset management"
+      ],
+      "non_obvious_insights": "Organizations often 'fall into' poor data quality through systemic neglect rather than intentional mismanagement; it is a passive accumulation of technical debt."
+    },
+    {
+      "section_number": 2,      
+      "section_title": "Key Terms and Concepts: The Governance Core",
+      "allocated_word_count": 400,
+      "chapter_mapping": ["Chapter 2", "Chapter 3"],
+      "sub_sections": [
+        "Operational definitions of the 6 DQ dimensions",
+        "The Data Quality Improvement Cycle architecture"
+      ],
+      "key_technical_requirements": [
+        "Explain Boolean pass/fail logic at the record level",
+        "Describe the role of Data Ownership and Data Catalogs in DQ governance"
+      ],
+      "non_obvious_insights": "The Data Catalog should be treated as a central 'control' for lineage and standards, not just a passive repository or dictionary."
+    },
+    {
+      "section_number": 3,
+      "section_title": "The Impact of Data Quality",
+      "allocated_word_count": 500,
+      "chapter_mapping": ["Chapter 1", "Chapter 4"],
+      "sub_sections": [
+        "Quantifying the $11.8M cost of poor data quality",
+        "Developing quantitative and qualitative benefit estimates"
+      ],
+      "key_technical_requirements": [
+        "Analyze 'budget impacts' and incorrectly sized teams due to remedial work",
+        "Address common leadership challenges such as the 'Excel will do' argument"
+      ],
+      "non_obvious_insights": "57% of organizations lack visibility into the true cost of bad data; the primary economic danger is the 'hidden' headcount required to manually fix data during business processes."
+    },
+    {
+      "section_number": 4,
+      "section_title": "Introduction to the Data Quality Cycle",
+      "allocated_word_count": 550,
+      "chapter_mapping": ["Chapter 2", "Chapter 4", "Chapter 5"],
+      "sub_sections": [
+        "Supplier and tool selection criteria for purpose-built DQ platforms",
+        "The Data Discovery phase: Linking strategy to data profiling"
+      ],
+      "key_technical_requirements": [
+        "Evaluate the hierarchy of strategy, objectives, processes, and data",
+        "Define technical considerations for data source connections and privacy"
+      ],
+      "non_obvious_insights": "The 'Data Discovery' phase must link perceived non-data issues (like slow shipping) to specific data points to avoid the trap of cleaning data that has no business impact."
+    },
+    {
+      "section_number": 5,
+      "section_title": "Data Quality Rule Design",
+      "allocated_word_count": 500,
+      "chapter_mapping": ["Chapter 6"],
+      "sub_sections": [
+        "Rule scope definition and false-positive mitigation",
+        "Implementation of rule weighting, priorities, and thresholds"
+      ],
+      "key_technical_requirements": [
+        "Explain the calculation of overall DQ scores through rule amalgamation",
+        "Detail the iterative nature of design, build, and testing phases"
+      ],
+      "non_obvious_insights": "Individual rule checks are binary, but 'quality' is an amalgamation; an asset's health is determined by the weighted threshold of its collective rule passes."
+    },
+    {
+      "section_number": 6,
+      "section_title": "Data Cleansing and Quality Improvement",
+      "allocated_word_count": 500,
+      "chapter_mapping": ["Chapter 7", "Chapter 8"],
+      "sub_sections": [
+        "Hierarchical reporting: Executive dashboards vs. Failed Data Reports",
+        "The cyclical remediation process and prioritization strategies"
+      ],
+      "key_technical_requirements": [
+        "Detail methodologies for active/inactive data and duplicate detection",
+        "Describe collaborative prioritization through stakeholder voting"
+      ],
+      "non_obvious_insights": "Strategic momentum often trumps absolute priority; it is technically more effective to remediate an 'efficient' issue than to stall the entire program on a high-priority, complex blocker."
+    },
+    {
+      "section_number": 7,
+      "section_title": "Operationalising Data Quality",
+      "allocated_word_count": 450,
+      "chapter_mapping": ["Chapter 9", "Chapter 9", "Chapter 10"],
+      "sub_sections": [
+        "Methods for preventing re-occurrence and root-cause analysis",
+        "Managing the transition from project to day-to-day operations"
+      ],
+      "key_technical_requirements": [
+        "Integrate DQ into Architecture Review Boards and IT ticketing systems",
+        "Assess the future impact of LLMs on automated rule generation"
+      ],
+      "non_obvious_insights": "Remediation is a 'one-off' cost; success is only achieved when the 'new issue' emergence rate drops, signaling that the architecture itself has been fixed."
+    },
+    {
+      "section_number": 8,     
+      "section_title": "Closing: Managing the Data Quality Journey",
+      "allocated_word_count": 200,
+      "chapter_mapping": ["Chapter 11"],
+      "sub_sections": [
+        "Summary of core best practices: Source-centric management and education",
+        "The steward-producer relationship as a driver of success"
+      ],
+      "key_technical_requirements": [
+        "Reiterate the importance of tracking benefits and preventing recurrence",
+        "Final roadmap strategy for leveraging past successes"
+      ],
+      "non_obvious_insights": "The ultimate goal is to move the DQ function to the source system, making the relationship between the data steward and the producer the primary engine of quality."
+    }
+  ]
+}

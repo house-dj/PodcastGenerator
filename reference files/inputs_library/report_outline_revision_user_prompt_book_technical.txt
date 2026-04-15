@@ -1,0 +1,10 @@
+USER PROMPT: Revise the following outline so that the sum of section allocated_word_count values
+is within ±10% of target_word_count. Do not change anything else in the outline. Return ONLY valid JSON.
+
+Original outline JSON:
+{{outline}}
+
+Rules:
+- Preserve clarity and coverage.
+- Adjust section allocated_word_count values and/or section list if necessary.
+- Ensure the final sum is within ±10% of target_word_count for the whole document.

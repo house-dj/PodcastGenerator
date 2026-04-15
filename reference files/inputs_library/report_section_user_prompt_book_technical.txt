@@ -1,0 +1,42 @@
+USER PROMPT:  
+I am writing a detailed long-form technical report on the book: "{{report_topic}}".
+Your task is to write the full content for the section titled: "{{section_title}}". Following is the source material (text of selected chapter(s)), followed by the task instructions.
+<document>
+{{section_chapters_text}}
+</document>
+
+Task Instructions:
+1. Structural Directives (from the Master Outline):
+{% if section_purpose %}
+Section purpose: {{ section_purpose }}
+{% endif %}
+Sub-sections to cover: {{section_sub_sections}}. Exhaustively deconstruct these sub-sections.
+Non-Obvious Insight to Emphasize: {{section_non_obvious_insights}}. Include this as a thematic thread across sub-sections.
+2. Technical Requirements:
+Ensure the following technical cruxes are explored in detail:
+{{section_key_technical_requirements}}
+{% if previous_section_outline_str %}
+2A. Context Bridge:
+For context,  below is the outline of the previous section. Ensure the current section "{{section_title}}" flows logically from this context and does not repeat specific points. Previous Section Outline: "{{previous_section_outline_str}}". Use the 'Previous Section Outline' only for narrative flow and boundary setting, do not summarize or re-explain the contents of the previous section in the new text.
+{% endif %}
+{% if Current_knowledge %}
+2B. Audience Knowledge Baseline:
+The reader is already an expert in: {% include Current_knowledge %}.
+Constraint: Do not define basic terms. Focus on the unique implementation nuances and strategic trade-offs described in the provided source material.
+{% endif %}
+3. Source Material (Full Chapter Text):
+Use the previously provided text from {{section_chapter_mapping}} as your primary source of truth. 
+4. Sample Section:
+Here is a sample of a written section, based on another book:
+<document>
+{% include Report_section_prose_sample %}
+</document>
+
+Writing Instructions:
+- Target Depth: This section has {{section_sub_sections_count}} sub-sections. You must write {{sub_section_target_paras_guide}} expansive paragraphs for EACH sub-section listed.
+- Word Count Allocation: Your total target is {{section_allocated_word_count}} words. Do not provide a high-level summary. Instead, treat each sub-section and technical requirement as a primary heading requiring deep analysis.
+- Analytical Density: For every technical requirement (e.g., "{{section_key_technical_requirements}}"), you must provide a "how-to" analysis, a "trade-off" analysis, and a "failure mode" analysis based on the source text.
+- Evidence Requirement: You must cite at least one specific metric or framework from the source material for every 200 words written.
+- Requirement: Focus exclusively on the methodologies and technical arguments or frameworks within the attached text that align with the provided outline. Use the chapter numbers in the response, for example: "As detailed in the analysis of Chapter 6 ...".
+- Tone: Technical Deep-Dive (Staff Engineer level).
+- Formatting: Use plain text, no Markdown, no JSON. 

@@ -1,0 +1,8 @@
+USER PROMPT:
+ f"A previous LLM API call generated the below text for a section of a report."
+                f"The text is too short, being {wc} words, below the minimum {min_floor} words. "
+                f"Please expand substantively to meet or exceed {min_floor} words."
+                f"Refer to the section text, the report outline, and the section title and purpose provided to you."
+                f"Keep the section title and purpose."
+                f"Add meaningful information , e.g. more detail on the topic. Do not add waffle, wordiness or repetition."
+                f"Keep sentences no longer than 20 words. Return plain text (no markdown headings)."

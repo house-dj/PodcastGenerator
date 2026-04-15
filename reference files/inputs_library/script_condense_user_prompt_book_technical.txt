@@ -1,0 +1,15 @@
+USER PROMPT
+An LLM previously generated the below script, this is intended to be a spoken-word script for an informational podcast. The script is too long, your task it to condense it. Previous script:
+<document>
+{{generated_script_outside_wc}}
+</document>
+
+Task Description:
+The previous script is too long ({{generated_script_wc}} words, max allowed {{script_max_wc}} words). 
+Your task is to **EDIT and CONDENSE** the previous script to fall within the target range, 
+specifically aiming **below {{script_max_wc}} words but above {{script_min_wc}} words**. 
+Achieve this by removing the least essential details, simplifying complex sentences, and 
+eliminating all redundant and weak adjectives. 
+Preserve all key informational content and the script structure. 
+You must return the full, EDITED script only. Do not return the previous script.
+Do not add commentary or pre-amble. Return plain text, no Markdown, no JSON.

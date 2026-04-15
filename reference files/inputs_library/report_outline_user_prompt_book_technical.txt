@@ -1,0 +1,23 @@
+USER PROMPT:  
+Your task is to create a rigorous thematic outline for a deep-dive report on the book: "{{report_topic}}". A chapter-by-chapter summary of the book as source for the outline is provided here, followed by the task instructions.
+<document>
+{{reference_material}}
+</document>
+
+Task Instructions:
+Synthesize the provided chapter summaries into a high-density structure. Your goal is to map the book’s core "thesis" and its supporting technical or strategic pillars, ignoring any foundational or introductory content. The intent of the report is to allow the user to quickly learn any new concepts, ideas, frameworks and real-world examples from the book.
+Knowledge Filtering:
+{% if Current_knowledge%}
+The user is already knowledgeable about: {% include Current_knowledge%}.
+{% endif %}
+Skip all "Industry 101" content {% if Current_knowledge %} and information the user is familiar with ({% endif %}.
+Focus exclusively on the advanced delta: the specific methodologies, architectural patterns, or strategic frameworks that represent the "frontier" of the book's subject matter.
+Outline Requirements:
+Thematic Synthesis: Group the book’s content into logical "Systems" or "Domains of Thought." Do not follow the linear chapter order.
+Technical/Strategic Cruxes: For each section, identify the primary trade-offs, constraints, or paradigm shifts the author discusses.
+Non-Obvious Insights: Prioritize sections that deal with complexity, edge cases, or controversial arguments over standard best practices.
+Density Control: Distribute the target word count ({{report_target_wc}}) based on the intellectual "weight" of the concepts. More complex or unique ideas should receive a higher word count allocation.
+Constraints:
+Follow this JSON schema: {% include Report_outline_schema %}. Use the schema only for structure, do not copy values. The "topic" field value should be the book title.  Note the mandatory 'chapter_mapping' fields in each section where you should record which chapters map to that section. Ensure that each section refers to a maximum of three chapters. If a section (like an Introduction) provides synthesis rather than specific chapter data, the chapter_mapping should be an empty list [] or map to Chapter 1.  The number of sections in the output does not need to match the number of chapters in the book or the number of sections in the sample JSON. Note also the 'non_obvious_insights' field in each section which contains a sharp insight or provocative point about the section, e.g. "Why the CAP theorem doesn't apply the way you think here".
+Ensure total section word counts sum roughly to {{report_target_wc}}.
+Ensure all chapters of the book are included in the outline. The book contains {{chapter_count}} chapters (may include introductions and closings). Do not reference, map to, or invent a Chapter {{chapter_count + 1}} or beyond. 

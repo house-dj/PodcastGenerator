@@ -1,0 +1,35 @@
+5. Data Governance in the Data Mesh
+Chapter 5, Chapter 9, Chapter 14, Chapter 15
+
+Introduction to Federated Computational Governance
+Chapter 5 introduces the data mesh model of governance, known as Federated Computational Governance.  The key idea is that responsibility and decision-making for many governance functions - such as modelling and data quality - are delegated to the data domains, but global governance policies ensure trust, security, and - importantly - interoperability across data products. The application of the policies is heavily automated through the data platform.  
+
+The book contrasts this to the traditional approach to data governance as an IT-led initiative with central control, rigid policies and models, authoritative decision making, costly processes of inspection after-the-fact, and minimal support for change. 
+
+Federated Computational Governance seeks to move governance toward a 'steering and guiding' mode, embrace the reality of constant change to the data landscape, and move the management of data risks to earlier in the lifecycle. Whereas traditional  data governance relies on frictional top-down processes and authority that overrides domain interests to create an illusion of control, the federated model embeds governance in domain accountability and aligned incentives, with the additional interaction overhead mitigated through automation.
+
+The distributed model of independent data products and teams can be viewed through a systems thinking lens as a network of interconnected systems, requiring a dynamic equilibrium between domain-level autonomy, global interoperability and global-level controls.  This achieves the alignment of incentives and lets the system operate with less central 'push'. 
+Systems can be adjusted through feedback loops (dampening or reinforcing change) and leverage points.  For example, negative and positive feedback loops could be used to adjust data product visibility within the platform discovery feature, based on product quality ratings. A leverage point example would be setting limits on data product change lead-times or failure rates, to manage product complexity. 
+
+Federated Governance Operating Model
+By design Data Mesh is a federation with semi-autonomous domains owning their data products, and a set of global standards and policies.  The governance team is a cross-functional group with domain representatives, platform experts, and SMEs. The team decides on which policies must be implemented globally, how the platform supports these computationally, and how data products adopt the policies. The team may come together in groups, for example a global policies and standards group.
+
+Domain representatives reflect the interests of their business domain and their roles as data product publishers and consumers, and therefore as agents and customers of governance. Platform product owners and architects participate  as the managers of platform features and implementation. SMEs provide the necessary input on security, compliance, and legal. Management and admin roles may also be required. 
+
+The main output of the governance team is policies, the guides or rules to implement governance. Global policies apply to all data products or the gaps between data products, and should generally be minimized as their implementation is harder.  Local policies are decided by a domain team and apply to its data products. 
+The data council, as the highest decision-making body with accountability for policies, also shifts to a federated model with representatives from domains.
+
+The data governance team is key to the federated operating model because it is where otherwise distributed, independent parties assemble and decide, and because the accountabilities create an interest for each party in achieving outcomes without central pushing.  Incentives need to be in place as leverage points toward system outcomes, particularly around domain priorities. Local incentives, driven by product thinking, focus on data product creation and enrichment. Global incentives, such as quality metrics, motivate adoption of global policies at the domain level.
+
+Embedding Policies
+In Data Mesh, governance policies are executed and verified computationally by the platform, such that governance is nearly transparent. Policies are standardized, embedded, and integrated and configured within the data product itself, for example access, audit, retention, privacy and protection.  Everything is executed by the platform, which can provide automated tests and automated monitoring, through CI/CD pipelines and polling of data product metrics.   
+
+Through this embedding, policies are validated and imposed at the right time through a data product’s life cycle, and right in the flow of data.  By packaging data, code, and governance policies together, the model ensures governance is applied consistently and maintained within the same technical boundary as the data.
+
+Architecturally,  Chapter 14 explains that three logical elements are embedded into every data product to ensure uniform configuration, execution, and enforcement: control interfaces for configuration and invocation, a shared sidecar execution layer for enforcement logic, and a containerized runtime environment. The components themselves are provided by the platforms.  Specific data standards can be implemented into data product APIs or models. 
+
+Embedding and automation not only reduce governance effort but can also be seen as a 'carrot and stick' incentive for teams and roles in the governance system, as policies are both simple to apply but also unavoidable and transparent.
+
+Transitioning to Federated Computational Governance
+The transition requires a phased shift from centralized control to distributed accountability — starting with small experiments, then scaling participation and policy coverage. As detailed in Chapter 15, the new operating model elements must be put in place carefully to ensure buy-in from accountable parties and trust in the system. Governance roles and execution move into domain teams, and central efforts refocus on platform and interoperability.  
+The final phase reaches automated enforcement and continuous improvement,  measuring success through network effects between data producers and consumers, and accepting continual change in data, models, and use cases.

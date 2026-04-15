@@ -1,0 +1,126 @@
+USER PROMPT:
+I am creating a long-form audio script for a podcast on the topic of a book: "{{script_topic}}".
+Your task is to generate the script based on a detailed report on the book. Following is the detailed report, followed by the task instructions.
+<document>
+{{report_text}}
+</document>
+
+
+Task Instructions:
+Please transform the report into a learning-optimised long-form audio script for a single narrator. The script should preserve the intellectual structure and content of the report but be optimized for listening comprehension.  **You must ensure the final word count of {{script_target_word_count}} is reached** while following the structure, word and character format rules below. Introduce each new concept twice: first simply, then in a more detailed explanation. Reintroduce important terms before discussing them. Maintain conceptual depth but avoid dense academic phrasing
+
+---
+
+***HIGH-PRIORITY CONSTRAINTS FOR OUTPUT ACCURACY:***
+* **Word Count Adherence:** The total output length must adhere to the requested word count of {{script_target_word_count}}. Especially avoid under-shooting the word count. **Important Guidance on Word Count vs Style Priorities:** To achieve a long-form audio script you should PRIORITISE reaching the word count goal over any Style guidelines in this prompt. You are permitted to relax on the style constraints to avoid under-shooting the word count target. You may as needed elaborate on points, or slow the pacing by splitting complex points into multiple sentences, or add some explanation to the Final Synthesis and Closing sections. Ensure to still strictly keep to the output structure.
+* **Output Scope:** Return ONLY the script text. Do not include any commentary, notes, or explanations before or after the script.
+
+---
+
+STRUCTURE TO FOLLOW:
+
+1. Opening hook and introduction (2–3 minutes)
+2. Orientation to the book (3–5 minutes)
+3. Core concept segments corresponding to the main sections of the report
+4. Periodic recap sections every two segments (e.g. "Let's quickly recap...", "Let's briefly go back over those points..")
+5. Final synthesis
+6. Closing
+
+Segments Structure
+Each core segment must contain:
+
+1. Transition from previous topic
+2. Statement of the core idea
+3. Detailed explanation reflecting the source section in full. 
+4. Implications
+
+---
+
+OUTPUT FORMAT:
+(Note, you should determine the number of Parts sections required beyond Part 3, based on the sections in the source material).
+
+<break time="2s"/>
+[Title of Episode].
+
+<break time="1s"/>
+Introduction.
+[spoken content]
+
+<break time="2s"/>
+Orientation.
+[spoken content]
+
+<break time="2s"/>
+Part 1 - [Heading].
+[spoken content]
+
+<break time="2s"/>
+Part 2 - [Heading].
+[spoken content]
+
+<break time="1s"/>
+Recap.
+[spoken content]
+
+<break time="2s"/>
+Part 3 - [Heading].
+[spoken content]
+
+<break time="2s"/>
+Part 4 - [Heading].(OPTIONAL: IF REQUIRED)
+[spoken content]
+
+<break time="1s"/>
+Recap.(OPTIONAL: IF REQUIRED)
+[spoken content]
+
+<break time="2s"/>
+Part 5 - [Heading].(OPTIONAL: IF REQUIRED)
+[spoken content]
+
+<break time="2s"/>
+Part 6 - [Heading].(OPTIONAL: IF REQUIRED)
+[spoken content]
+
+<break time="1s"/>
+Recap.(OPTIONAL: IF REQUIRED)
+[spoken content]
+
+<break time="2s"/>
+Part 7 - [Heading].(OPTIONAL: IF REQUIRED)
+[spoken content]
+
+<break time="2s"/>
+Part 8 - [Heading].(OPTIONAL: IF REQUIRED)
+[spoken content]
+
+<break time="2s"/>
+Final Synthesis
+[spoken content]
+
+<break time="2s"/>
+Closing
+[spoken content]
+
+---
+
+STYLE REQUIREMENTS (Follow only after wordcount is met):
+Voice: Human, confident. 
+Tone: Engaging but professional. 
+Voice: Use active constructions and dynamic verbs as default.  Apply storytelling techniques where relevant.
+Imagery: Use concrete, specific details as needed. Avoid sweeping metaphors and symbolic imagery.
+Rhythm & Pacing: Maintain natural spoken cadence.
+Avoid inspirational language unless it is direct from the source report. 
+
+---
+
+WORD AND CHARACTER FORMAT REQUIREMENTS:
+Years: Important - use spoken format for years ("nineteen seventy-nine" NOT 1979).
+Numerals: Spell out numbers under ten. Render version numbers as "two", "three-point-one", e.g. v1.2 is "version one-point-two".
+Circa: Use "around" or "approximately", not "circa" or "c."
+Do not output any non-standard ASCII characters.
+
+---
+
+
+

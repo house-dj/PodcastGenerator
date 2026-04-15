@@ -1,0 +1,84 @@
+{
+  "title": "A Detailed Overview of the Anglo-Saxon Period: From Post-Roman Britain to the Norman Conquest (c. 410–1066)",
+  "character_count_target": 1200,
+  "sections": [
+    {
+      "title": "I. Key Historical Events and Chronology",
+      "character_count_estimate": 100,
+      "purpose": "To establish the chronological narrative, covering the foundational moments and major conflicts, with a heavy focus on the impact of Danish invasions.",
+      "subsections": [
+        "1.1 The End of Roman Britain and the Fifth-Century Crisis (c. 410): The 'Great Migration' and the settlement debate.",
+        "1.2 The Rise of the Heptarchy (5th–8th Centuries): The dominance of Mercia and Northumbria and the concept of the 'Bretwalda'.",
+        "1.3 The First Viking Age and the Crisis of the Kingdom (Late 8th - Mid 9th Centuries): The initial raids (Lindisfarne, 793) and the arrival of the Great Heathen Army (865).",
+        "1.4 The Reign of Alfred the Great and the Defence of Wessex (871–899): The Treaty of Wedmore and the establishment of the *Burghal Hidage* (fortified towns).",
+        "1.5 The Unification of England (10th Century): The reconquest of the Danelaw by Edward the Elder and Æthelstan, forming a unified English Kingdom.",
+        "1.6 The Second Viking Age (Late 10th - Early 11th Centuries): Renewed incursions, the practice of Danegeld (tribute), and the collapse of the House of Wessex.",
+        "1.7 The Cnutish Empire (1016–1042): The reign of Cnut the Great, a North Sea empire, and the integration of Anglo-Saxon and Danish nobles and law.",
+        "1.8 The Restoration and Crisis of 1066: Edward the Confessor, the succession dispute, and the Battles of Stamford Bridge and Hastings."
+      ]
+    },
+    {
+      "title": "II. Political Developments and Kingship",
+      "character_count_estimate": 250,
+      "purpose": "To analyze the evolution of governance, from small tribal polities to a unified, administered kingdom.",
+      "subsections": [
+        "2.1 The Evolution of Anglo-Saxon Kingship: From military leader (*cyning*) to Christian monarch, emphasizing ritual and sacral authority.",
+        "2.2 Central Administration: The role and power of the *Witenagemot* (Witan) in selecting and advising the King, and consenting to law and taxation.",
+        "2.3 Local Government Structures: The organization of shires (counties), hundreds, and their corresponding courts.",
+        "2.4 The Office of the Ealdorman (later Earl): Regional governors and the devolution of royal power to local nobility.",
+        "2.5 The Military System: The role of the *Fyrd* (peasant levy) and the professionalization of the royal guard (Housecarls under Cnut)."
+      ]
+    },
+    {
+      "title": "III. Church and Religious Developments",
+      "character_count_estimate": 250,
+      "purpose": "To trace the conversion process, the cultural impact of monasticism, and the relationship between the Church and the Crown.",
+      "subsections": [
+        "3.1 The Conversion of the Anglo-Saxons (Late 6th - 7th Centuries): The Roman (Augustinian) and Celtic (Ionian) missions and their interactions.",
+        "3.2 The Synod of Whitby (664): The decision to align the English Church with Roman practice and its long-term political implications.",
+        "3.3 The Golden Age of Monasticism: Monasteries as centres of learning, art (e.g., illuminated manuscripts), and literature (e.g., the works of Bede).",
+        "3.4 The Impact of Viking Attacks on Monastic Life: Destruction, dispersion of learning, and the subsequent decline of the English Church.",
+        "3.5 The Tenth-Century Monastic Reform: The revitalization movement led by figures like Dunstan, Æthelwold, and Oswald, and the re-establishment of Benedictine rule.",
+        "3.6 The Church as a Political and Landowning Power: The role of bishops and archbishops in the Witenagemot."
+      ]
+    },
+    {
+      "title": "IV. Social Developments and Structure",
+      "character_count_estimate": 200,
+      "purpose": "To map the rigid social hierarchy and explore aspects of daily life, particularly the status of women and peasants.",
+      "subsections": [
+        "4.1 The Anglo-Saxon Social Hierarchy: Distinctions between *Aethel* (nobility), *Thegns* (landed elite), *Ceorls* (free peasantry), and slaves.",
+        "4.2 The Status of Women: Property rights, legal standing, marriage, and divorce; key examples of powerful women (e.g., Æthelflæd, Lady of the Mercians).",
+        "4.3 Settlement and Community: The structure of the village (*tun*), agricultural life, and the importance of kinship (*maegth*).",
+        "4.4 The Impact of the Danelaw on Social Structure: Assimilation of Scandinavian settlers and the persistence of local customs.",
+        "4.5 The Development of Town Life: The role of the *burhs* not only as forts but as commercial and social centres."
+      ]
+    },
+    {
+      "title": "V. Economic History and Trade",
+      "character_count_estimate": 200,
+      "purpose": "To examine the foundation of the economy, the development of trade, and the system of taxation.",
+      "subsections": [
+        "5.1 The Agrarian Foundation: Open-field farming, agricultural technology (the heavy plough), and the measurement of land (the *hide*).",
+        "5.2 The Rise of Trade and the *Wics*: Early coastal trading settlements and their significance in the North Sea network.",
+        "5.3 The Development of Coinage: From sceattas to the standardized silver penny, and the King's monopoly over minting and currency.",
+        "5.4 The Impact of Danegeld: The unprecedented taxation system imposed to pay off the Vikings and its effect on the national economy and administration.",
+        "5.5 External Trade Links: Trade with Francia, the Rhineland, and Scandinavia (the role of York and London)."
+      ]
+    },
+    {
+      "title": "VI. Legal Developments and Systems",
+      "character_count_estimate": 200,
+      "purpose": "To detail the evolution of the legal framework, from tribal codes to a national system, highlighting legal justice and land tenure.",
+      "subsections": [
+        "6.1 Early Law Codes: The earliest written laws (e.g., Æthelberht's code) and the reliance on monetary compensation (*wergild* and *bot*).",
+        "6.2 The Codification of Law: Alfred the Great's *Domboc* and the moralization and centralization of the legal system.",
+        "6.3 The Administration of Justice: The function and proceedings of the hundred courts and the shire courts.",
+        "6.4 Methods of Proof: Judicial oaths, compurgation (oath-helpers), and the use of ordeals (water and fire).",
+        "6.5 Land Tenure: The distinction between *Bookland* (chartered, inheritable land) and *Folkland* (communal or customary land).",
+        "6.6 Danish Influence on Law: The unique legal and administrative features of the Danelaw, including the use of local legal terms and precedents.",
+        "6.7 The Enduring Legacy: How the Anglo-Saxon legal system provided a foundation for post-Conquest English Common Law."
+      ]
+    }
+  ]
+}

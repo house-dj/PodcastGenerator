@@ -1,0 +1,7 @@
+SQL (intermediate level).
+Python (basic to intermediate for data manipulation and processing scripts).
+Basics of data quality cycle.
+Data modelling: dimensional, logical relational 3NF, conceptual. 
+Physical data modelling (intermediate level).
+Traditional data Warehousing.
+Data Governance (basic).

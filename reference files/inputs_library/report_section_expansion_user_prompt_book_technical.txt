@@ -1,0 +1,25 @@
+USER PROMPT:  
+You just produced the following text for "{{section_title}}", which is one section of a report on the book "{{report_topic}}".
+
+Here is the text you produced:
+<document>
+{{generated_section_text_outside_wc}}
+</document>
+Here are the text of the book chapters {{section_chapter_mapping}} which the section is based on:
+<document>
+{{section_chapter_text}}
+</document>
+
+Task Requirements:
+The section is only {{generated_section_wc}} words, but the target word count is {{section_allocated_word_count}}. Your task is to expand the section to meet the target word count. 
+
+To reach the target, review the previously generated text and the book chapters. 
+- Adding new technical depth and more extensive explanation and exploration. 
+- Focusing on the "Non-Obvious Insight": "{{non_obvious_insights}}". Explicitly connect each of the following technical requirements to that insight: {{section_key_technical_requirements}}.
+- Add granular or missing detail from the source material. 
+- Do not repeat what you have already written.  
+Writing Instructions:
+- Headings: Maintain the sub-section headings
+- Tone: Technical Deep-Dive (Staff Engineer level).
+- Formatting: Use Markdown. Use ### for sub-sections. Do not use JSON.
+

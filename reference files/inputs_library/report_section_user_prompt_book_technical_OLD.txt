@@ -1,0 +1,35 @@
+USER PROMPT:  
+I am writing a detailed long-form technical report on the book: "{{report_topic}}".
+Your task is to write the full content for the section titled: "{{section_title}}". Following is the source material (text of selected chapter(s)), followed by the task instructions.
+<document>
+{{ section_chapter_text }}
+</document>
+
+Task Instructions:
+1. Structural Directives (from the Master Outline):
+{% if section_purpose %}
+Section purpose: {{ section_purpose }}
+{% endif %}
+Sub-sections to Cover: {{section_sub_sections}}
+Non-Obvious Insight to Emphasize: {{section_non_obvious_insights}}
+2. Technical Requirements:
+Ensure the following technical cruxes are explored in detail:
+{{section_key_technical_requirements}}
+{% if previous_section_outline_str %}
+2A. Context Bridge:
+For context,  below is the outline of the previous section. Ensure the current section "{{ current_section_title }}" flows logically from this context and does not repeat specific points. Previous Section Outline: "{{ previous_section_outline_str }}. Use the 'Previous Section Outline' only for narrative flow and boundary setting. Do not summarize or re-explain the contents of the previous section in the new text.
+{% endif %}
+3. Audience Knowledge Baseline:
+{% if knowledge_file %}
+The reader is already an expert in: {{knowledge_file}}.
+Constraint: Do not define basic terms. Focus on the unique implementation nuances and strategic trade-offs described in the provided source material.
+{% endif %}
+4. Source Material (Full Chapter Text):
+Use the previously provided from {{section_chapter_mapping}} as your primary source of truth. Synthesize the author's arguments into a cohesive narrative. 
+
+Writing Instructions:
+Target Length: This is a long-form report, your target for this section is {{section_allocated_word_count}} words ((>= {{section_min_wc_floor}} absolute minimum).
+Formatting: Use Markdown. Use ### for sub-sections. Do not use JSON.
+Evidence: Incorporate specific metrics, laws, or frameworks mentioned in the text (e.g., the $11.8M cost of poor data quality).
+Tone: Technical Deep-Dive (Staff Engineer level).
+Requirement: Focus exclusively on the advanced methodologies and architectural arguments within the attached text that align with the provided outline. Skip any introductory context found in the chapters. Use the chapter numbers in the response, for example: "As detailed in the analysis of Chapter 6 ...".

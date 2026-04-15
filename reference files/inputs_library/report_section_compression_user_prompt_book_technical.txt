@@ -1,0 +1,29 @@
+USER PROMPT:  
+You are an expert editor. Your task is to compress the following text. 
+<document>
+{{generated_section_text_outside_wc}}
+</document>
+
+Task Instructions:
+Compress the following text to approximately {{section_allocated_word_count}} words.
+
+Requirements:
+• Preserve the original meaning, arguments, and key technical points.
+• Compress each paragraph to roughly {{ (section_allocated_word_count/generated_section_wc * 100) | round(2) }}% of its original length while preserving meaning.
+• Remove repetition, filler phrasing, and unnecessary elaboration.
+• Prefer shorter sentences and tighter phrasing.
+• Combine related ideas where possible.
+• Do NOT introduce new ideas or interpretations.
+• Do NOT omit key concepts.
+• Maintain the same section headings and overall structure.
+• The final output MUST NOT exceed  {{section_allocated_word_count + 60}}  words.
+
+Method:
+1. Identify redundant explanations or repeated concepts.
+2. Condense long sentences into shorter ones.
+3. Merge closely related sentences and paragraphs.
+4. Retain only essential explanatory detail.
+
+Output
+Return only the compressed text. No commentary, no pre-amble. 
+Format as plain text, no Markdown, no JSON.
