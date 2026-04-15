@@ -38,7 +38,7 @@ import sys
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, Optional, Tuple, Coroutine
+from typing import Any, Dict, Optional, Tuple, Coroutine, List
 from openrouter import OpenRouter
 from typing_extensions import LiteralString
 from urllib.parse import urlparse
@@ -51,6 +51,8 @@ import traceback
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, TemplateError, TemplateSyntaxError, StrictUndefined
 import warnings
+from pathlib import Path
+
 sys.path.append(os.path.abspath('..')) # required to get path to sister directory for script imports
 from scripts_utilities.utility_ssml_and_year_correction import process_document_for_ssml, replace_years_in_text
 from scripts_utilities.utility_calc_sentence_lengths import analyze_sentence_length
@@ -645,89 +647,231 @@ def check_llm_file_access_error(text: str) -> bool:  # TODO: remove this now wit
         return False
 
 
+def parse_chapters_from_summary(markdown_text: str) -> List[Dict[str, Any]]:
+    """
+    Extract chapter metadata from Book Summary markdown headings.
+
+    Expected headings like:
+      #### Chapter 0 Introduction
+      #### Chapter 01 An Overview...
+      #### Chapter 10 The Future...
+
+    Returns:
+      [
+        {
+          "raw_heading": "#### Chapter 01 An Overview...",
+          "number": 1,
+          "number_str": "01",
+          "label": "Chapter 01",
+          "title": "An Overview..."
+        },
+        ...
+      ]
+    """
+    chapter_pattern = re.compile(
+        r'^\s*#{1,6}\s*Chapter\s+(\d+)\b(.*)$',
+        re.IGNORECASE | re.MULTILINE
+    )
+
+    chapters: List[Dict[str, Any]] = []
+
+    for match in chapter_pattern.finditer(markdown_text):
+        number_str = match.group(1)
+        trailing_title = match.group(2).strip()
+        number = int(number_str)
+
+        # Preserve Chapter 0 as "Chapter 0".
+        # Preserve zero-padding for non-zero chapters if present in the source.
+        label = f"Chapter {number_str}" if number == 0 else f"Chapter {number_str.zfill(2)}"
+
+        chapters.append({
+            "raw_heading": match.group(0).strip(),
+            "number": number,
+            "number_str": number_str,
+            "label": label,
+            "title": trailing_title
+        })
+
+    return chapters
+
+
+def build_chapter_prompt_vars_from_summary(summary_path: str) -> Dict[str, Any]:
+    """
+    Read the Book Summary markdown file and build chapter-related prompt variables.
+
+    Returns keys:
+      valid_chapter_ids
+      chapter_numbers
+      chapter_count
+      chapter_count_excluding_intro
+      has_chapter_zero
+      chapters_structured
+    """
+    with open(summary_path, "r", encoding="utf-8") as f:
+        markdown_text = f.read()
+
+    chapters = parse_chapters_from_summary(markdown_text)
+    if not chapters:
+        raise ValueError(f"No chapter headings found in Book Summary file: {summary_path}")
+
+    chapters_sorted = sorted(chapters, key=lambda x: x["number"])
+    valid_chapter_ids = [c["label"] for c in chapters_sorted]
+    chapter_numbers = [c["number"] for c in chapters_sorted]
+
+    return {
+        "valid_chapter_ids": valid_chapter_ids,
+        "chapter_numbers": chapter_numbers,
+        "chapter_count": len(chapters_sorted),  # compatibility with existing prompt
+        "chapter_count_excluding_intro": len([n for n in chapter_numbers if n != 0]),
+        "has_chapter_zero": 0 in chapter_numbers,
+        "chapters_structured": chapters_sorted,
+    }
+
+
 async def generate_report_outline(
         # TODO: RESTRUCTURE   generate_outline just needs mode, topic, target wc, optional subtopics, optional reference list, opt use refs flag.
         # TODO: RESTRUCTURE   schema and anything else will come from manifest.  The book chapter summary will be part of references list
         # TODO: RESTRUCTURE   as an item with type local pdf.
+        # TODO: remove pdf_annotations from return
         process_inputs: InputManifest,
         generation_mode: str,
         topic: str,
         report_target_wc: int,
         subtopics_str: Optional[str] = None,
         guidelines: Optional[str] = None,
-        reference_material: Optional[List[Dict[str,str]]] = None,
+        reference_material: Optional[List[Dict[str, str]]] = None,
         flag_use_refs_only: Optional[bool] = None
 ) -> tuple[Outline | None, object | None]:
+    """
+    Generates a structured outline for the nominated topic. Requests outline for topic from LLM API based on sample
+    schema. Optionally includes reference material (book summary) with the API request. Checks that the
+     specified word count per report section in the outline meets the total report target word count,
+     regenerates the outline if word count falls short. Returns an Outline object (and pdf annotations,
+     no longer required). Looks up most information for the API request from the InputManifest file, including prompts.
+    Updated logic:
+    - Finds the Book Summary markdown file in reference_material
+    - Parses chapter headings from the summary itself
+    - Passes exact valid chapter IDs into the prompt
+    - Uses parsed summary chapters for chapter_count instead of counting files
+    """
     info(f"Requesting outline for topic: {topic}")
-    chapter_count = 0 # Updated, we count chapters here to avoid chapter hallucinations
-    # print("Ref material length: " + str(len(reference_material))) # DEBUG
-    # get the book summary file only, to pass to the outline creation
+
+    summary_keywords = ["book summary", "book_summary"]
+    summary_file_entry: Optional[Dict[str, str]] = None
+    outline_reference_material = reference_material
+
+    # Identify the Book Summary file and keep only that file for outline generation,
+    # preserving the existing behaviour of passing the summary only.
     if reference_material:
-       keywords = ['book summary', 'book_summary'] # words indicating the book summary file
-       for file_path in reference_material:
-           if file_path['value'] == "": continue  # there are entries in reference_material for web pages and public pdfs with value = ""
-           filename = os.path.basename(str(file_path['value']).strip())
-           # filename = str(Path(file_path['value']).name)# get just filename
-           chapter_count += 1  # Updated counting book chapters here using files
-           # identify the book summary file
-           if any(word in filename.lower() for word in keywords): # TODO: flexibility for
-           # TODO cont. different modes. maybe needs to be another field in the topics.csv
-                reference_material = [file_path]  # Note, critical to have [] so this is still a list
-                chapter_count -= 1 # Updated deduct from chapter count so we don't count the summary as a chapter
-           # print(f"File: {str(file_path)[-50:]}, chapter_count after: {chapter_count}") # DEBUG
-    print("*** Outline reference material: " + str(reference_material)) # DEBUG
-    # print("Chapter count:" + str(chapter_count)) # DEBUG
-    # set the prompt variables which do not come from the inputs manifest file
-    user_kwargs = {"report_topic": topic, "report_target_wc": report_target_wc, "reference_material": reference_material,
-                   "chapter_count": chapter_count} # Updated with chapter_count
-    # call the prompt builder, specify which base prompt template to use
+        for file_entry in reference_material:
+            value = str(file_entry.get("value", "")).strip()
+            if not value:
+                continue
+
+            filename = os.path.basename(value).lower()
+            if any(word in filename for word in summary_keywords):
+                summary_file_entry = file_entry
+                outline_reference_material = [file_entry]
+                break
+
+    valid_chapter_ids: List[str] = []
+    chapter_count = 0
+
+    if summary_file_entry:
+        summary_path = str(summary_file_entry["value"]).strip()
+
+        try:
+            chapter_vars = build_chapter_prompt_vars_from_summary(summary_path)
+            valid_chapter_ids = chapter_vars["valid_chapter_ids"]
+            chapter_count = chapter_vars["chapter_count"]
+
+            info(
+                f"Parsed chapters from summary: {valid_chapter_ids} "
+                f"(count={chapter_count}, has_chapter_zero={chapter_vars['has_chapter_zero']})"
+            )
+        except Exception as e:
+            warn(f"Failed to parse chapters from Book Summary '{summary_path}': {e}")
+            valid_chapter_ids = []
+            chapter_count = 0
+    else:
+        warn("No Book Summary file found in reference_material; chapter constraints will be weaker.")
+
+    print("*** Outline reference material: " + str(outline_reference_material))  # DEBUG
+
+    # Prompt variables.
+    # Keep chapter_count for backward compatibility with the existing prompt.
+    # Add valid_chapter_ids so the prompt can constrain chapters exactly.
+    user_kwargs = {
+        "report_topic": topic,
+        "report_target_wc": report_target_wc,
+        "reference_material": outline_reference_material,
+        "chapter_count": chapter_count,
+        "valid_chapter_ids": valid_chapter_ids,
+    }
+
     outline_system_prompt = process_inputs.build_prompt(generation_mode, 'Report_outline_system')
-    outline_user_prompt = process_inputs.build_prompt(generation_mode, 'Report_outline_user',
-                                                      **user_kwargs)
-    #print(outline_user_prompt) # DEBUG
-    temperature = 0.9 # TODO: make this a control parameter in the control file csv
-    outline_response = await llm_call(outline_system_prompt , outline_user_prompt , temperature)
+    outline_user_prompt = process_inputs.build_prompt(
+        generation_mode,
+        'Report_outline_user',
+        **user_kwargs
+    )
+
+    temperature = 0.9
+    outline_response = await llm_call(outline_system_prompt, outline_user_prompt, temperature)
     outline_text, model, pdf_annotations = outline_response
 
-    if outline_text is None: return None, None  # outline generation failed
-    if outline_text == "Failed to generate due to error in API call": return None, None  # outline generation failed
+    if outline_text is None:
+        return None, None
+    if outline_text == "Failed to generate due to error in API call":
+        return None, None
 
-    print("*** OUTLINE TEXT:" + outline_text + "   ****") # DEBUG
+    print("*** OUTLINE TEXT:" + outline_text + "   ****")  # DEBUG
     data = try_json_load(outline_text)
+
     if "target_word_count" not in data:
         data["target_word_count"] = report_target_wc
+
     outline = parse_outline(data)
-    # print("*** PARSED OUTLINE:" + str(outline) + "   ****") # DEBUG
-    # TODO: check all chapters are present in the outline. Create distinct list of chapters from outline and check
-    #  nothing missing in the sequence, also check the max chapter is the same as the max from references
+
     info(f"Outline received: {outline.topic} | Sections = {len(outline.outline_sections)}. Model: {model}")
 
-    outline.word_count_target = report_target_wc  # set this variable within the outline, used in later generation
-    # print("generate outline call done")  # DEBUG
+    outline.word_count_target = report_target_wc
 
-    # check the target section word counts in outline add up to total report target word count:
     within, total_est = outline_sum_within_tolerance(outline, report_target_wc)
-    # print("outline sum within tolerance call done") # Debug
-    # if outline word counts are off, regenerate the outline:
+
     retries_left = OUTLINE_RETRIES
     revised_target_wc = report_target_wc
+
     while not within and retries_left > 0:
         info(
-            f"Outline total {total_est} vs target {report_target_wc} (±{int(OUTLINE_TOLERANCE * 100)}%) -> revising...")
-        revised_target_wc = int(revised_target_wc * 1.15) # arbitrarily increase the report target wordcount to incentivise the LLM to
-        # allocate more words per outline section
-        user_kwargs['report_target_wc'] = revised_target_wc
-        # TODO: flagging this up as FYI, no longer using separate revise outline function, just use increased target wc
-        #  to nudge LLM to increase wc
-        print("Revised user kwarg report_target_wc: " + str(user_kwargs['report_target_wc'])) # DEBUG
-        outline_user_prompt = process_inputs.build_prompt(generation_mode, 'Report_outline_user',
-                                                          **user_kwargs)
+            f"Outline total {total_est} vs target {report_target_wc} "
+            f"(±{int(OUTLINE_TOLERANCE * 100)}%) -> revising..."
+        )
+
+        revised_target_wc = int(revised_target_wc * 1.15)
+        user_kwargs["report_target_wc"] = revised_target_wc
+
+        print("Revised user kwarg report_target_wc: " + str(user_kwargs["report_target_wc"]))  # DEBUG
+
+        outline_user_prompt = process_inputs.build_prompt(
+            generation_mode,
+            'Report_outline_user',
+            **user_kwargs
+        )
+
         outline_response = await llm_call(outline_system_prompt, outline_user_prompt, temperature)
         outline_text, model, pdf_annotations = outline_response
-        # old code
-        #outline = await revise_outline_to_fit_target(process_inputs, outline, report_target_wc, generation_mode, outline_system_prompt)
-        # print("revise outline call done")  # DEBUG
-        # outline.word_count_target = report_target_wc
+
+        if outline_text is None or outline_text == "Failed to generate due to error in API call":
+            return None, None
+
+        data = try_json_load(outline_text)
+        if "target_word_count" not in data:
+            data["target_word_count"] = report_target_wc
+
+        outline = parse_outline(data)
+        outline.word_count_target = report_target_wc
+
         within, total_est = outline_sum_within_tolerance(outline, report_target_wc)
         retries_left -= 1
 
