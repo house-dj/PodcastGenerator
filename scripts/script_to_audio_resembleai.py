@@ -67,7 +67,7 @@ QUEUED_SCRIPTS_DIR = os.path.join(OUTPUTS_DIR, "queued_scripts")
 PROCESSED_SCRIPTS_DIR = os.path.join(OUTPUTS_DIR, "processed_scripts")
 OUTPUT_AUDIO_DIR = os.path.join(OUTPUTS_DIR, "audio_files")
 INCOMPLETE_AUDIO_DIR = os.path.join(OUTPUTS_DIR, "incomplete_audio_files")
-PODCAST_QUEUE_DIR = os.path.join(PODCAST_FILES_DIR,"Podcast Feeds/Private-Podcasts/_new_uploads")
+PODCAST_QUEUE_DIR = os.path.join(PODCAST_FILES_DIR,"Podcast Feeds","Private-Podcasts","_new_uploads")
 
 # Resemble Enhanced TTS models have a limit of 1000 characters.
 MAX_CHARS_PER_CALL = 800 #960

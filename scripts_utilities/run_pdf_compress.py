@@ -2,7 +2,8 @@
 from utility_compress_pdf import compress_pdf
 import os
 
-directory = "C:/Users/jdhou/OneDrive/Documents/Knowledge/Products Reference/Databricks Documentation/Merged PDFs"
+directory = "C:/Users/jdhou/OneDrive/Documents/Arts/Reading/Calibre/Peter C. Verhoef, Edwin Kooge, Natas/Creating Value with Data Analytics i (58)"
+
 
 files = [f for f in os.listdir(directory) if f.lower().endswith(".pdf")]
 

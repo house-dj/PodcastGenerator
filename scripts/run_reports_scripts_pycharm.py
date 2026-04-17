@@ -20,14 +20,16 @@ import asyncio
 from pathlib import Path
 
 # --- Adjust these for your environment ---
-PODCAST_GENERATOR_DIR = os.path.join(os.getenv('PODCAST_GENERATOR_DIR'))
-topics_path = os.path.join(PODCAST_GENERATOR_DIR,'/inputs/topics.csv')
-output_text_path = os.path.join(PODCAST_GENERATOR_DIR,"./text generation files/generated_text_files")
+PODCAST_GENERATOR_DIR = os.getenv('PODCAST_GENERATOR_DIR')
+print(PODCAST_GENERATOR_DIR) # DEBUGGING
+topics_path = os.path.join(PODCAST_GENERATOR_DIR,'inputs', 'topics.csv')
+print(topics_path) # DEBUGGING
+output_text_path = os.path.join(PODCAST_GENERATOR_DIR, 'text generation files','generated_text_files')
 CONFIG = {
     # CSV with columns: Topic, TargetWordCount[, Sub-topics]
-    "csv": topics_path.resolve(),
+    "csv": topics_path, #.resolve(),
     # Output directory for generated files
-    "outdir": output_text_path.resolve(),
+    "outdir": output_text_path,  #.resolve(),
     # Model: for free tier limiter in your script, you likely set gemini-2.5-flash
     "model": "gemini-2.5-flash",
     # Parallelism per topic (matches your async script)

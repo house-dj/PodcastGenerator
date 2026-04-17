@@ -58,7 +58,7 @@ from scripts_utilities.utility_ssml_and_year_correction import process_document_
 from scripts_utilities.utility_calc_sentence_lengths import analyze_sentence_length
 
 # ===================== Files Path =====================
-PODCAST_GENERATOR_DIR = os.path.join(os.getenv('PODCAST_GENERATOR_DIR'))
+PODCAST_GENERATOR_DIR = os.getenv('PODCAST_GENERATOR_DIR')
 
 # ===================== Tunables (env overrides) =====================
 REQ_TIMEOUT_SEC = int(os.getenv("LLM_REQ_TIMEOUT_SEC", "180"))  # each LLM request
@@ -95,13 +95,13 @@ RPD = int(os.getenv("GEMINI_LIMIT_RPD", "250"))
 """
 
 # Text inputs for prompts construction
-manifest_path = os.path.join(PODCAST_GENERATOR_DIR,"/reference files/inputs_manifest.csv")  # key to all other inputs
-library_dir = os.path.join(PODCAST_GENERATOR_DIR, "/reference files/inputs_library")
+manifest_path = os.path.join(PODCAST_GENERATOR_DIR,"reference files","inputs_manifest.csv")  # key to all other inputs
+library_dir = os.path.join(PODCAST_GENERATOR_DIR, "reference files","inputs_library")
 
-history_report_prose_sample_path = os.path.join(PODCAST_GENERATOR_DIR,"/reference files/JB_Bury_sample.txt")
-history_script_style_sample_path = os.path.join(PODCAST_GENERATOR_DIR,"/reference files/Doug_Metzger_sample.txt")
-technical_report_prose_sample_path = os.path.join(PODCAST_GENERATOR_DIR,"/reference files/Vu_Trinh_sample.txt")
-technical_script_style_sample_path = os.path.join(PODCAST_GENERATOR_DIR,"/reference files/Seattle_Data_Guy_sample.txt")
+history_report_prose_sample_path = os.path.join(PODCAST_GENERATOR_DIR,"reference files","JB_Bury_sample.txt")
+history_script_style_sample_path = os.path.join(PODCAST_GENERATOR_DIR,"reference files","Doug_Metzger_sample.txt")
+technical_report_prose_sample_path = os.path.join(PODCAST_GENERATOR_DIR,"reference files","Vu_Trinh_sample.txt")
+technical_script_style_sample_path = os.path.join(PODCAST_GENERATOR_DIR,"reference files","Seattle_Data_Guy_sample.txt")
 
 api_key = os.getenv("OPENROUTER_API_KEY")
 if not api_key:
@@ -783,6 +783,8 @@ async def generate_report_outline(
         try:
             chapter_vars = build_chapter_prompt_vars_from_summary(summary_path)
             valid_chapter_ids = chapter_vars["valid_chapter_ids"]
+            valid_chapter_numbers = chapter_vars["chapter_numbers"] # TODO include this as an outline field to be used in
+                                                                    #  section generation for filename matching, instead of regex
             chapter_count = chapter_vars["chapter_count"]
 
             info(
@@ -810,11 +812,8 @@ async def generate_report_outline(
     }
 
     outline_system_prompt = process_inputs.build_prompt(generation_mode, 'Report_outline_system')
-    outline_user_prompt = process_inputs.build_prompt(
-        generation_mode,
-        'Report_outline_user',
-        **user_kwargs
-    )
+    outline_user_prompt = process_inputs.build_prompt(generation_mode,'Report_outline_user',
+        **user_kwargs )
 
     temperature = 0.9
     outline_response = await llm_call(outline_system_prompt, outline_user_prompt, temperature)
@@ -1010,13 +1009,16 @@ async def _generate_one_report_section_with_watchdog(
             text, model, section_failure_flag = await asyncio.wait_for(_inner(), timeout=SECTION_WATCHDOG_SEC)
 
             # If successful, check if the content is substantial (i.e., not a failure)
-            if word_count(text) > 0:
+            if word_count(text) > 0 and section_failure_flag is False:
                 if verbose:
                     info(f"Section {section_number}/{total_sections} DONE: {section_title} (words={word_count(text)}) Model: {model}")
                 return text, section_failure_flag  # TODO: include section info to be passed to next section as context. Return is a tuple
+            elif section_failure_flag:
+                warn(f"Section {section_number} failed to generate. Exiting.")
+                sys.exit()
             else:
                 # This catches the case where generate_section_text returns "" as best effort
-                raise RuntimeError(f"Section generation returned empty content. Model: {model}")
+                raise RuntimeError(f"Section {section_number} generation returned empty content. Model: {model}")
 
         except (asyncio.TimeoutError, RuntimeError, Exception) as e:
             # Handle specific timeout and generic error/runtime error
@@ -1064,7 +1066,6 @@ async def generate_report_section_text(
     section_chapters_text = [] # initialise
     section_text = "Section failed to generate" # default
     model = "NA" # default and initialisation
-    file_access_success_flag = False # initialise
     section_final_fail_flag = False # initialise
 
     if previous_section_outline:
@@ -1084,31 +1085,45 @@ async def generate_report_section_text(
             #  section-specific references
 
             # Get mapping numbers from outline, search the reference material list for the matching chapters, put those file names
-            # into a list which will be used to set the user prompt and passed in llm call
+            # into a list which will be used to set the user prompt and passed in llm call for current section
 
-            # First check and handle cases where LLM has not followed chapter mapping formatting
-            # TODO: do this in the outline parsing
-            clean_chapter_mapping = []  # initialise
+            # TODO: check and handle cases where LLM has not followed chapter mapping formatting
+            #  do this in the outline parsing?
+            # First do the matching between the outline listed chapters for the section and the file names
+            section_chapters = [] # list for file paths of chapters for the section
             for chapter in section_outline.chapter_mapping:
-                if ',' not in chapter and not chapter.lower().startswith('chapters'):
-                    # there is only one chapter given, e.g. 'Chapter 7', NOT 'Chapters 5, 7 , 8'
-                    clean_chapter_mapping.append(chapter)
-                else:   # LLM has returned several chapters in a single entry, e.g. 'Chapters 5, 7, 8'
-                    numbers = re.findall(r'\d+', chapter) # regex finds all sequences of digits
-                    # Separate into a list
-                    section_chap_list =  [f"Chapter {num}" for num in numbers] # Result: ['Chapter 5', 'Chapter 6', 'Chapter 9']
-                    for chap in section_chap_list:
-                        clean_chapter_mapping.append(chap)
-            # Now do the matching between the outline listed chapters for the section and the file names
-            section_chapters = [] # initialise
-            for chapter in clean_chapter_mapping:
                 chapter_match_count = 0
-                for filename in reference_material:
-                    # print("***chapter: " +  str(chapter)) # DEBUG
-                    # print("***filename: " + str(filename['value'])) # DEBUG
-                    chapter_no = chapter.lower() + "_" # TODO: this is brittle
-                    if chapter_no in str(filename['value'].lower()):
-                        section_chapters.append({'value': filename['value'], 'type': 'local pdf'})
+                chapter_no = int(re.search(r'\d+', chapter).group()) # regex extract chapter number only and normalise
+                # to integer to remove leading zeroes
+                # TODO: include integer chapter numbers as separate field in outline which can be used directly here
+                for filenamepath in reference_material:
+                    try:
+                        raw_path_value = filenamepath.get('value', "")
+                        print(raw_path_value)
+                        filename = Path(str(raw_path_value).lower()).name # get the file name only from the path
+                    except KeyError:
+                        print("Error: The key 'value' does not exist in the dictionary.")
+                        print(f"Available keys are: {list(filenamepath.keys())}")
+                    except TypeError as e:
+                        if filenamepath is None:
+                            print("Error: 'filenamepath' is None (not a dictionary).")
+                        else:
+                            print(f"Type Error: {e}")
+                            # This often triggers if you've used 'str' as a variable name elsewhere
+                    except NameError as e:
+                        print(f"Name Error: {e}. Check if 'Path' or 'filenamepath' are defined.")
+                    except Exception as e:
+                        warn(f"Failed to extract filename: {e}")
+                    match = re.search(r'(?i)chapter[\s_]*(\d+)', filename) # search for a number after chapter in file name
+                    if match: # check if regex match exists before accessing .group()
+                        file_num = int(match.group(1))
+                    else:  # handle files that don't match the pattern
+                        file_num = None
+                    # file_num = int(re.search(r'(?i)chapter[\s_]*(\d+)', filename).group(1)) # regex extract chapter
+                    # number after word 'chapter', handle underscores and spaces, normalise to integer to remove leading zeros
+                    if chapter_no == file_num:
+                        # print("found chapter_no to file_num match")  # DEBUGGING
+                        section_chapters.append({'value': filenamepath['value'], 'type': 'local pdf'})
                         chapter_match_count += 1
                 if chapter_match_count == 0:  #!= 1:
                     err(f"Error for Section {section_outline.section_number}. Required book chapter {chapter} from "
@@ -1139,12 +1154,14 @@ async def generate_report_section_text(
                         print("file read successfully")
                         section_chapters_text.append(content)
                         print("successfully appended text")
-                reference_material = None # ensure nothing will be based as files to API call
+                reference_material = None # ensure nothing will be passed as files to API call
         else:  # there is ref material but no chapter numbers in the outline, this is not a book. Set flags for prompt construction
+            # TODO: handle this
             if 'web page' in reference_material[1]: has_web_page = True
             if 'public pdf' in reference_material[1]: has_public_pdf = True
             if 'local pdf' in reference_material[1]: has_local_pdf = True
     else:  # no reference material, so will just use LLM knowledge, no action needed
+        print("didn't find section reference material")  # DEBUGGING
         pass
 
     # Pass all the section variables in kwargs
@@ -1199,11 +1216,8 @@ async def generate_report_section_text(
             return section_text, model, section_final_fail_flag  # exit the loop and function
         section_text = (text or "").strip()
         wc = word_count(section_text)
-        # check LLM did not report that it could not access files
-        if not check_llm_file_access_error(section_text): # TODO: remove this now with local pdf processing ?
-            file_access_success_flag = True
         max_floor = int(section_outline.allocated_word_count * 1.2) # TODO: temp workaround
-        if min_floor <= wc <= max_floor and file_access_success_flag:  # Success
+        if min_floor <= wc <= max_floor:  # Success
             return section_text, model, section_final_fail_flag  #  exit the loop and function
         elif wc < min_floor:  # wc too low for section, repeat the whole section generation with a higher wc target
             # Case where section is unfeasibly small, covers case where the check_llm_file_access_error() didn't work
@@ -1221,7 +1235,7 @@ async def generate_report_section_text(
                     continue # just proceed to next attempt
 
             # Case where section too short but no file access problem detected, so  expand
-            if wc < min_floor and file_access_success_flag == True:
+            if wc < min_floor:
                 if attempt == retries:
                     err(f"Section '{section_outline.section_title}' below floor on final attempt. {wc} < {min_floor}")
                     section_final_fail_flag = True
@@ -1235,15 +1249,6 @@ async def generate_report_section_text(
                                                                       **user_kwargs)
                     attempt += 1
                     continue
-
-            # Case where file access problem detected
-            if not file_access_success_flag: # TODO: remove this now with local pdf processing ?
-                if attempt == retries:
-                    err(f"Section '{section_outline.section_title}' failed to access files on final attempt.")
-                    section_final_fail_flag = True
-                    return section_text, model, section_final_fail_flag
-                else:
-                    warn(f"Section '{section_outline.section_title}' LLM reported failed to access files. Retrying (attempt {attempt}/{retries})...")
 
             # section_user_prompt = process_inputs.build_prompt(generation_mode, 'Report_section_user', **user_kwargs)
         else: # wc over max_floor
@@ -1413,7 +1418,7 @@ async def convert_report_to_script(
         script_wc = word_count(script)
         # TODO: the wc limits (as % of target) for each check condition should be set in the generation mode matrix so this
         #    code is flexible to trigger different actions for different modes
-        if script_wc < min_wc*.95: # word count is more than 80% of min, don't need to include Report in prompt
+        if script_wc < min_wc: # *.95: # word count is more than 80% of min, don't need to include Report in prompt
         # Note, accept wc 5% below min in order to avoid expansion tries
             if attempt == retries:
                 warn(f"Script below target bounds after {retries} attempts: got {script_wc}, want {min_wc}-{max_wc}. Model: {model}")
@@ -1633,8 +1638,8 @@ async def process_row(
     """
 
     # --- 1. SETUP & INITIALIZATION ---
-    control_matrix =  ModeMatrix(os.path.join(PODCAST_GENERATOR_DIR,"/reference files/generation_mode_matrix.csv"))
-    process_inputs = InputManifest(os.path.join(PODCAST_GENERATOR_DIR,"/reference files/inputs_manifest.csv"))
+    control_matrix =  ModeMatrix(os.path.join(PODCAST_GENERATOR_DIR,"reference files", "generation_mode_matrix.csv"))
+    process_inputs = InputManifest(os.path.join(PODCAST_GENERATOR_DIR,"reference files", "inputs_manifest.csv"))
     start_topic = time.monotonic()
     ts_name = timestamp_str()
     base_name = build_base_filename(row_id, category, topic, ts_name)
@@ -1866,14 +1871,18 @@ async def run_all(
         # set Boolean value of flag for making use of reference material exclusively
         references_list = []
         for item in web_page_references:
-            references_list.append({'value': item, 'type': 'web page'})
+            if len([char for char in item if char != " "]) > 3: # entry must be at least 4 chars long excluding spaces, e.g. '1.md'
+                references_list.append({'value': item, 'type': 'web page'})
         for item in public_pdf_references:
-            references_list.append({'value': item, 'type': 'public pdf'})
+            if len([char for char in item if char != " "]) > 3:
+                references_list.append({'value': item, 'type': 'public pdf'})
         for item in local_pdf_references:
-            references_list.append({'value': item, 'type': 'local pdf'})
+            if len([char for char in item if char != " "]) > 3:
+                references_list.append({'value': item, 'type': 'local pdf'})
         if flag_use_refs_only in ["yes", "y", "true", "x", "1"]:
             flag_use_refs_only = True
         else: flag_use_refs_only = None
+        print(f"references_list in run_all: {str(references_list)}")
         #info(
          #   f"---Topics Row {idx}/{len(modified_rows)} ID={row_id or 'NA'} | Topic={topic[50:]}")
         # Skip if 'Podcast Description' already exists and is non-empty
